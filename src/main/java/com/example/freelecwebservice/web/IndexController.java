@@ -1,25 +1,33 @@
 package com.example.freelecwebservice.web;
 
+import com.example.freelecwebservice.config.auth.dto.SessionUser;
 import com.example.freelecwebservice.service.posts.PostsService;
-import com.example.freelecwebservice.web.dto.PostsListResponseDto;
 import com.example.freelecwebservice.web.dto.PostsResponseDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
 
     private final PostsService postsService;
+    private final HttpSession httpSession;
 
     @GetMapping("/")
     public String index(Model model) {
+
         model.addAttribute("posts", postsService.findAllDesc());
+
+        SessionUser user = (SessionUser) httpSession.getAttribute("user");
+
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
+        }
+
         return "index";
     }
 
